@@ -8,7 +8,7 @@ from typing import List, Dict
 # Page configuration
 st.set_page_config(
     page_title="Customer Support RAG",
-    page_icon="🤖",
+    page_icon="",
     layout="wide"
 )
 
@@ -74,11 +74,11 @@ def send_message_to_backend(messages: List[Dict]) -> str:
             return f"Error: {response.status_code} - {response.text}"
             
     except requests.exceptions.ConnectionError:
-        return f"❌ **Connection Error**: Could not connect to the backend at {BACKEND_URL}. Please check if the backend service is running."
+        return f"**Connection Error**: Could not connect to the backend at {BACKEND_URL}. Please check if the backend service is running."
     except requests.exceptions.Timeout:
-        return "❌ **Timeout Error**: The request took too long. Please try again."
+        return "**Timeout Error**: The request took too long. Please try again."
     except Exception as e:
-        return f"❌ **Error**: {str(e)}"
+        return f"**Error**: {str(e)}"
 
 def display_chat_message(role: str, content: str):
     """Display a chat message with appropriate styling"""
@@ -90,7 +90,7 @@ def display_chat_message(role: str, content: str):
             st.write(content)
 
 def main():
-    st.title("🤖 Customer Support RAG Assistant")
+    st.title("Customer Support RAG Assistant")
     st.markdown("Ask questions about your documents and get AI-powered responses!")
     
     # Initialize session state
@@ -98,7 +98,7 @@ def main():
     
     # Sidebar with information
     with st.sidebar:
-        st.header("ℹ️ Information")
+        st.header("Information")
         st.markdown(f"""
         **Backend URL:** `{BACKEND_URL}`
         
@@ -114,12 +114,12 @@ def main():
         try:
             response = requests.get(f"{BACKEND_URL}/docs", timeout=5)
             if response.status_code == 200:
-                st.success("✅ Backend Connected")
+                st.success("Backend Connected")
             else:
-                st.error("❌ Backend Error")
+                st.error("Backend Error")
         except:
-            st.error("❌ Backend Offline")
-            st.info("💡 If you're the developer, make sure your backend is deployed and the BACKEND_URL is correct.")
+            st.error("Backend Offline")
+            st.info("If you're the developer, make sure your backend is deployed and the BACKEND_URL is correct.")
     
     # Display chat history
     for message in st.session_state.messages:
@@ -127,7 +127,7 @@ def main():
     
     # Display followup questions if any
     if st.session_state.followup_questions:
-        st.markdown("### 💡 Suggested Follow-up Questions:")
+        st.markdown("### Suggested Follow-up Questions:")
         cols = st.columns(min(len(st.session_state.followup_questions), 3))
         for i, question in enumerate(st.session_state.followup_questions):
             with cols[i % 3]:
@@ -169,7 +169,7 @@ def main():
         st.rerun()
     
     # Clear chat button
-    if st.button("🗑️ Clear Chat", type="secondary"):
+    if st.button("Clear Chat", type="secondary"):
         st.session_state.messages = []
         st.session_state.followup_questions = []
         st.rerun()
