@@ -1,0 +1,59 @@
+# Use Python 3.11 slim image
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Copy requirements and install Python dependencies
+COPY requirements-prod.txt ./requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy application files
+COPY main.py .
+COPY dependencies.py .
+COPY routes/ ./routes/
+COPY models/ ./models/
+COPY services/ ./services/
+COPY utils/ ./utils/
+COPY internal/ ./internal/
+COPY config/ ./config/
+
+# Pre-download the embeddings model during build to avoid runtime permission issues
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-base-en-v1.5')" || true
+
+# Create non-root user and set up cache directory
+RUN adduser --disabled-password --gecos '' appuser && \
+    mkdir -p /home/appuser/.cache /home/appuser/.local && \
+    chown -R appuser:appuser /app /home/appuser
+USER appuser
+
+# Set HuggingFace cache directory
+ENV TRANSFORMERS_CACHE=/home/appuser/.cache/huggingface
+ENV HF_HOME=/home/appuser/.cache/huggingface
+
+# Cloud Run automatically sets PORT environment variable
+# Default to 8000 for local development
+EXPOSE 8000
+
+# Health check (disabled for Cloud Run as it has its own health checks)
+# HEALTHCHECK --interval=60s --timeout=10s --start-period=10s --retries=2 \
+#     CMD curl -f http://localhost:${PORT:-8000}/docs || exit 1
+
+# Use PORT environment variable set by Cloud Run, fallback to 8000
+CMD exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} 
