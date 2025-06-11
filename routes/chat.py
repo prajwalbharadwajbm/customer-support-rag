@@ -3,7 +3,6 @@ from fastapi.responses import StreamingResponse
 from langchain_core.runnables import Runnable
 from pydantic import BaseModel
 import json
-from models.content_safety import ContentSafetyRequest
 import re
 from typing import AsyncGenerator, List
 import logging
@@ -12,9 +11,7 @@ from models.chat import ChatInput
 
 # Configure logging
 logger = logging.getLogger(__name__)
-CONTENT_SAFETY_ERROR = {
-    "error": "We are unable to process this request as it falls outside our acceptable usage guidelines. Please feel free to ask about appropriate and authorized uses of Zmanda Pro."
-}
+
 router = APIRouter(
     prefix="/chat",
     tags=["chat"]
