@@ -12,8 +12,7 @@ An AI-powered customer support system that provides intelligent responses based 
 
 ## Live Demo
 
-- **Backend API**: [https://customer-support-rag.railway.app]
-- **Frontend**: [https://customer-support-rag.streamlit.app]
+- **Link**: [https://customer-support-rag.streamlit.app]
 
 ## Architecture
 
@@ -55,26 +54,39 @@ An AI-powered customer support system that provides intelligent responses based 
 
 ## Deployment
 
-### Railway (Backend) + Streamlit Cloud (Frontend)
+### Google Cloud Run (Backend) + Streamlit Cloud (Frontend)
 
-#### Step 1: Deploy Backend to Railway
+#### Step 1: Deploy Backend to Google Cloud Run
 
-1. **Install Railway CLI**:
+1. **Install Google Cloud CLI**:
    ```bash
-   npm install -g @railway/cli
+   # Install gcloud CLI from https://cloud.google.com/sdk/docs/install
+   gcloud auth login
+   gcloud config set project <your-project-id>
    ```
 
-2. **Deploy to Railway**:
+2. **Build and Deploy to Cloud Run**:
    ```bash
-   railway login
-   railway up
+   # Build the container image
+   gcloud builds submit --tag gcr.io/<your-project-id>/customer-support-rag
+
+You can follow gcp deployment guide [here](./docs/GCP_DEPLOYMENT.md)
+
+   # Deploy to Cloud Run
+   gcloud run deploy customer-support-rag \
+     --image gcr.io/<your-project-id>/customer-support-rag \
+     --platform managed \
+     --region us-central1 \
+     --allow-unauthenticated \
+     --port 8000
    ```
 
-3. **Add Environment Variables** in Railway dashboard:
-   - `OPENAI_API_KEY`
-   - `GROQ_API_KEY`
-   - `QDRANT_URL`
-   - Any other required environment variables
+3. **Set Environment Variables**:
+   ```bash
+   gcloud run services update customer-support-rag \
+     --set-env-vars GROQ_API_KEY=your_groq_key,QDRANT_URL=your_qdrant_url \
+     --region us-central1
+   ```
 
 #### Step 2: Deploy Frontend to Streamlit Cloud
 
@@ -82,7 +94,7 @@ An AI-powered customer support system that provides intelligent responses based 
 2. **Go to** [share.streamlit.io](https://share.streamlit.io)
 3. **Connect your GitHub repository**
 4. **Set main file path**: `frontend/deploy_streamlit.py`
-5. **Add secrets**: `BACKEND_URL = "https://your-railway-url.railway.app"`
+5. **Add secrets**: `BACKEND_URL = "<your-cloud-run-service-url>"`
 
 ## Project Structure
 
@@ -91,7 +103,6 @@ An AI-powered customer support system that provides intelligent responses based 
 ├── dependencies.py              # Dependency injection
 ├── requirements.txt             # Python dependencies
 ├── Dockerfile                   # Container definition for backend
-├── railway.json                 # Railway deployment config
 ├── .dockerignore               # Docker ignore rules
 ├── .gitignore                  # Git ignore rules
 │
@@ -100,7 +111,6 @@ An AI-powered customer support system that provides intelligent responses based 
 │
 ├── models/                     # Pydantic data models
 │   ├── chat.py                # Chat message models
-│   └── content_safety.py      # Content safety models
 │
 ├── services/                   # Business logic services
 ├── utils/                      # Utility functions
@@ -166,7 +176,7 @@ streamlit run frontend/streamlit_app.py
 
 ## Monitoring
 
-- **Railway**: Built-in metrics and logging
+- **Google Cloud Run**: Built-in metrics, logging, and monitoring
 - **Streamlit Cloud**: Application monitoring
 - **Health Checks**: Available at `/docs` endpoint
 
@@ -185,7 +195,7 @@ This project is licensed under the MIT License.
 ## Support
 
 If you encounter any issues:
-1. Check the deployment logs in Railway/Streamlit Cloud
+1. Check the deployment logs in Google Cloud Run/Streamlit Cloud
 2. Verify environment variables are set correctly
 3. Test the backend API directly at `/docs`
 4. Check network connectivity between services
