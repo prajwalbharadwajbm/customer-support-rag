@@ -11,11 +11,9 @@ langchain-groq==0.3.2
 langchain-openai==0.3.22
 langchain-qdrant==0.2.0
 langchain-text-splitters==0.3.8
-langchain-huggingface==0.1.2
 
-# HuggingFace for embeddings (compatible versions)
-sentence-transformers>=2.6.0
-transformers>=4.36.0
+# Lightweight HuggingFace client (no PyTorch dependency)
+huggingface-hub==0.25.0
 
 # HTTP and async
 httpx==0.28.1

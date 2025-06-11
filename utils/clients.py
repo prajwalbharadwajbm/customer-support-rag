@@ -1,5 +1,6 @@
 from qdrant_client import QdrantClient
-from langchain_huggingface import HuggingFaceEmbeddings
+# using lightweight HuggingFace embeddings model
+from utils.lightweight_embeddings import HuggingFaceEndpointEmbeddings
 from langchain_groq import ChatGroq
 from internal.env_utils import SettingEnv
 import logging
@@ -24,19 +25,20 @@ def get_qdrant_client() -> QdrantClient:
         logger.error(f"Error initializing Qdrant client: {str(e)}")
         raise ApplicationError(f"Failed to initialize Qdrant client: {str(e)}") from e
 
-def get_embeddings_model() -> HuggingFaceEmbeddings:
-    """Initialize HuggingFace embeddings model
+def get_embeddings_model() -> HuggingFaceEndpointEmbeddings:
+    """Initialize HuggingFace endpoint embeddings model (lightweight, no PyTorch)
     
     Returns:
-        HuggingFaceEmbeddings: Initialized embeddings model
+        HuggingFaceEndpointEmbeddings: Initialized embeddings model
     
     Raises:
         ApplicationError: If model initialization fails
     """
     try:
-        return HuggingFaceEmbeddings(
-            model_name=settings.EMBEDDING_MODEL_NAME,
-            model_kwargs={"trust_remote_code": True, "device": "cpu"}
+        return HuggingFaceEndpointEmbeddings(
+            model=settings.EMBEDDING_MODEL_NAME,
+            task="feature-extraction",
+            huggingfacehub_api_token=settings.HUGGINGFACEHUB_API_TOKEN or settings.HF_token
         )
     except Exception as e:
         logger.error(f"Error initializing embeddings model: {str(e)}")

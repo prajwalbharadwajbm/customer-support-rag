@@ -34,8 +34,8 @@ COPY utils/ ./utils/
 COPY internal/ ./internal/
 COPY config/ ./config/
 
-# Pre-download the embeddings model during build to avoid runtime permission issues
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-base-en-v1.5')" || true
+# Removed: Pre-download of embeddings model (no longer needed for endpoint-only usage)
+# This significantly reduces container size and build time
 
 # Create non-root user and set up cache directory
 RUN adduser --disabled-password --gecos '' appuser && \
@@ -43,7 +43,7 @@ RUN adduser --disabled-password --gecos '' appuser && \
     chown -R appuser:appuser /app /home/appuser
 USER appuser
 
-# Set HuggingFace cache directory
+# Set HuggingFace cache directory (still needed for huggingface-hub client)
 ENV TRANSFORMERS_CACHE=/home/appuser/.cache/huggingface
 ENV HF_HOME=/home/appuser/.cache/huggingface
 
