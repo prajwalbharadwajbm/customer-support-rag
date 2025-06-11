@@ -1,0 +1,41 @@
+# Core FastAPI dependencies
+fastapi==0.115.9
+uvicorn==0.34.3
+pydantic==2.11.5
+pydantic-settings==2.9.1
+
+# LangChain core
+langchain==0.3.25
+langchain-core==0.3.65
+langchain-groq==0.3.2
+langchain-openai==0.3.22
+langchain-qdrant==0.2.0
+langchain-text-splitters==0.3.8
+langchain-huggingface==0.1.2
+
+# HuggingFace for embeddings (compatible versions)
+sentence-transformers>=2.6.0
+transformers>=4.36.0
+
+# HTTP and async
+httpx==0.28.1
+httpx-sse==0.4.0
+aiofiles==24.1.0
+requests==2.32.4
+
+# Qdrant client
+qdrant-client
+
+# Environment and configuration
+python-dotenv==1.1.0
+python-multipart==0.0.20
+
+# Basic utilities
+PyYAML==6.0.2
+tiktoken==0.9.0
+
+# Groq API
+groq==0.26.0
+
+# OpenAI API
+openai==1.86.0 
