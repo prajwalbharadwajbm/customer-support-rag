@@ -27,7 +27,7 @@ class SettingEnv(BaseSettings):
     
     # Optional: LangChain Tracing (for debugging and monitoring)
     LANGCHAIN_TRACING_V2: bool = False
-    LANGCHAIN_API_KEY: Optional[str] = "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"  # Example: "ls__your_langsmith_api_key"
+    LANGCHAIN_API_KEY: Optional[str] = None  # Example: "ls__your_langsmith_api_key"
     LANGCHAIN_ENDPOINT: str = "https://api.smith.langchain.com"
     LANGCHAIN_PROJECT: str = "customer-support-rag"
     
